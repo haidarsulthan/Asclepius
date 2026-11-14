@@ -84,7 +84,7 @@ void dashboardPasien(TreePasien rootP, User u) {
             cout << "Selamat datang, " << dataPasien->info.nama
                  << " (" << dataPasien->info.idPasien << ")" << endl;
         }
-        cout << "1. Pilih keluhan" << endl;
+        cout << "1. tulis keluhan" << endl;
         cout << "2. Lihat layanan, dokter, dan jadwal" << endl;
         cout << "3. Booking jadwal periksa" << endl;
         cout << "4. Riwayat booking" << endl;

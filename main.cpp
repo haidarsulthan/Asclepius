@@ -1,6 +1,7 @@
 #include <iostream>
 #include "user.h"
 #include "pasien.h"
+#include "keluhan.h"
 using namespace std;
 
 void fiturMenyusul(string namaFitur) {
@@ -75,7 +76,7 @@ void dashboardDokter(User u) {
     cout << "Logout berhasil." << endl;
 }
 
-void dashboardPasien(TreePasien rootP, User u) {
+void dashboardPasien(TreePasien rootP, ListKeluhan &listK, User u) {
     string pilih;
     NodePasien *dataPasien = searchPasien(rootP, u.idPenghubung);
     do {
@@ -84,7 +85,7 @@ void dashboardPasien(TreePasien rootP, User u) {
             cout << "Selamat datang, " << dataPasien->info.nama
                  << " (" << dataPasien->info.idPasien << ")" << endl;
         }
-        cout << "1. Pilih keluhan" << endl;
+        cout << "1. Tulis keluhan" << endl;                       // diganti
         cout << "2. Lihat layanan, dokter, dan jadwal" << endl;
         cout << "3. Booking jadwal periksa" << endl;
         cout << "4. Riwayat booking" << endl;
@@ -93,7 +94,7 @@ void dashboardPasien(TreePasien rootP, User u) {
         pilih = bacaInput("Pilihan: ");
 
         if (pilih == "1") {
-            fiturMenyusul("Pilih keluhan");
+            tulisKeluhan(listK, u);                               // diganti
         } else if (pilih == "2") {
             fiturMenyusul("Lihat layanan, dokter, dan jadwal");
         } else if (pilih == "3") {
@@ -138,10 +139,12 @@ int main() {
     User userAktif;
     bool berhasil;
     string pilih;
+    ListKeluhan listK;
 
     createTreeUser(rootU);
     createTreePasien(rootP);
     isiDataAwalUser(rootU);
+    createListKeluhan(listK);
 
     do {
         cout << "\n=== KLINIK ASCLEPIUS ===" << endl;
@@ -158,7 +161,7 @@ int main() {
                 } else if (userAktif.role == "Dokter") {
                     dashboardDokter(userAktif);
                 } else if (userAktif.role == "Pasien") {
-                    dashboardPasien(rootP, userAktif);
+                   dashboardPasien(rootP, listK, userAktif);
                 } else if (userAktif.role == "Perawat") {
                     dashboardPerawat(userAktif);
                 }

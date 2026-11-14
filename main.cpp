@@ -3,16 +3,10 @@
 #include "pasien.h"
 using namespace std;
 
-// ---------- kerangka dashboard (isi fitur menyusul) ----------
-
-// I.S.: sembarang
-// F.S.: pesan bahwa fitur belum tersedia tercetak
 void fiturMenyusul(string namaFitur) {
     cout << "[" << namaFitur << "] belum tersedia (menyusul)." << endl;
 }
 
-// I.S.: rootU terdefinisi, u adalah akun Admin yang sedang login
-// F.S.: menu Admin ditampilkan sampai Admin memilih logout (0)
 void dashboardAdmin(TreeUser &rootU, User u) {
     string pilih;
     do {
@@ -119,8 +113,6 @@ void dashboardPasien(TreePasien rootP, User u) {
     cout << "Logout berhasil." << endl;
 }
 
-// I.S.: u adalah akun Perawat yang sedang login
-// F.S.: menu Perawat ditampilkan sampai Perawat memilih logout (0)
 void dashboardPerawat(User u) {
     string pilih;
     do {
@@ -144,7 +136,6 @@ void dashboardPerawat(User u) {
     cout << "Logout berhasil." << endl;
 }
 
-// ---------- program utama ----------
 int main() {
     TreeUser rootU;
     TreePasien rootP;

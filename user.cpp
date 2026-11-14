@@ -2,25 +2,18 @@
 #include "user.h"
 using namespace std;
 
-// ---------- fungsi bantu internal ----------
 static bool isAlnum(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
 
-// ---------- operasi BST User ----------
-
-// I.S.: root sembarang
-// F.S.: root = NULL (pohon kosong)
 void createTreeUser(TreeUser &root) {
     root = NULL;
 }
 
-// Mengembalikan true jika pohon kosong
 bool isEmptyUser(TreeUser root) {
     return root == NULL;
 }
 
-// Mengembalikan alamat node baru berisi u (left dan right = NULL)
 NodeUser* alokasiUser(User u) {
     NodeUser *baru = new NodeUser;
     baru->info = u;
@@ -29,10 +22,6 @@ NodeUser* alokasiUser(User u) {
     return baru;
 }
 
-// I.S.: root terdefinisi (boleh kosong), u berisi data user
-// F.S.: u tersisip pada BST berdasarkan username jika belum ada
-//       (mengembalikan true); jika username sudah ada, pohon tidak
-//       berubah (mengembalikan false)
 bool insertUser(TreeUser &root, User u) {
     bool berhasil = false;
     if (root == NULL) {
@@ -46,7 +35,6 @@ bool insertUser(TreeUser &root, User u) {
     return berhasil;
 }
 
-// Mengembalikan alamat node dengan username yang dicari, NULL jika tidak ada
 NodeUser* searchUser(TreeUser root, string username) {
     NodeUser *cur = root;
     bool ketemu = false;
@@ -62,9 +50,6 @@ NodeUser* searchUser(TreeUser root, string username) {
     return cur;
 }
 
-// I.S.: root terdefinisi
-// F.S.: seluruh akun tercetak urut username (in-order);
-//       hash password tidak ditampilkan
 void tampilUser(TreeUser root) {
     if (root != NULL) {
         tampilUser(root->left);
@@ -74,9 +59,6 @@ void tampilUser(TreeUser root) {
     }
 }
 
-// Mengembalikan angka ID terbesar untuk role tertentu (mis. "DK003" -> 3),
-// 0 jika belum ada akun dengan role tersebut. ID bukan kunci BST,
-// sehingga seluruh pohon ditelusuri.
 int nomorTerbesarRole(TreeUser root, string role) {
     int hasil = 0;
     int kiri, kanan, sendiri = 0;
@@ -97,12 +79,6 @@ int nomorTerbesarRole(TreeUser root, string role) {
     return hasil;
 }
 
-// ---------- utilitas ----------
-
-// Hash FNV-1a 64-bit yang diimplementasikan manual (tanpa pustaka tambahan).
-// Username dipakai sebagai "salt" sehingga dua akun dengan password sama
-// menghasilkan hash berbeda. Hasil: 16 karakter heksadesimal.
-// Catatan: ini hash sederhana untuk keperluan tugas, bukan hash kriptografis.
 string hashPassword(string username, string password) {
     string data = username + ":" + password;
     unsigned long long h = 14695981039346656037ULL;
@@ -121,7 +97,6 @@ string hashPassword(string username, string password) {
     return hasil;
 }
 
-// Mengembalikan ID berformat prefix + nomor 3 digit, mis. ("DK", 7) -> "DK007"
 string buatId(string prefix, int nomor) {
     string angka = to_string(nomor);
     while (angka.length() < 3) {
@@ -130,8 +105,6 @@ string buatId(string prefix, int nomor) {
     return prefix + angka;
 }
 
-// Menampilkan prompt lalu membaca satu baris input.
-// Jika input berakhir (EOF), mengembalikan "0" agar perulangan pemanggil berhenti.
 string bacaInput(string prompt) {
     string s;
     cout << prompt;
@@ -144,7 +117,6 @@ string bacaInput(string prompt) {
     return s;
 }
 
-// Username: 4-15 karakter, hanya huruf dan angka (tanpa spasi)
 bool isUsernameValid(string username) {
     bool ok = (username.length() >= 4 && username.length() <= 15);
     size_t i = 0;
@@ -157,7 +129,6 @@ bool isUsernameValid(string username) {
     return ok;
 }
 
-// Password: minimal 6 karakter dan tidak mengandung spasi/tab
 bool isPasswordValid(string password) {
     bool ok = (password.length() >= 6);
     size_t i = 0;
@@ -170,10 +141,6 @@ bool isPasswordValid(string password) {
     return ok;
 }
 
-// ---------- proses autentikasi ----------
-
-// I.S.: rootU terdefinisi
-// F.S.: akun Admin awal (username: admin, password: admin123) tersisip
 void isiDataAwalUser(TreeUser &rootU) {
     User admin;
     admin.username = "admin";
@@ -183,10 +150,6 @@ void isiDataAwalUser(TreeUser &rootU) {
     insertUser(rootU, admin);
 }
 
-// Fungsi bantu internal: meminta username (unik) dan password (+konfirmasi).
-// I.S.: root terdefinisi
-// F.S.: jika valid, username dan password terisi dan batal = false;
-//       jika pengguna mengetik 0, batal = true
 static void inputKredensial(TreeUser root, string &username, string &password, bool &batal) {
     bool valid = false;
     string konfirmasi;
@@ -226,11 +189,6 @@ static void inputKredensial(TreeUser root, string &username, string &password, b
     }
 }
 
-// I.S.: rootU dan rootP terdefinisi
-// F.S.: jika seluruh input valid, satu pasien baru tersisip pada rootP
-//       (ID otomatis PSxxx) dan satu akun role Pasien tersisip pada rootU
-//       dengan idPenghubung = ID pasien tersebut; jika pengguna mengetik 0
-//       pada prompt mana pun, registrasi dibatalkan dan tidak ada data berubah
 void registrasiPasien(TreeUser &rootU, TreePasien &rootP) {
     string username, password, nama, nik, telepon;
     bool batal = false;
@@ -305,10 +263,6 @@ void registrasiPasien(TreeUser &rootU, TreePasien &rootP) {
     }
 }
 
-// I.S.: rootU terdefinisi
-// F.S.: jika username dan password cocok dalam maksimal 3 percobaan,
-//       berhasil = true dan userAktif berisi data akun; jika gagal 3 kali
-//       atau pengguna mengetik 0 pada username, berhasil = false
 void loginUser(TreeUser rootU, bool &berhasil, User &userAktif) {
     int percobaan = 0;
     bool batal = false;
@@ -340,9 +294,6 @@ void loginUser(TreeUser rootU, bool &berhasil, User &userAktif) {
     }
 }
 
-// I.S.: rootU terdefinisi (dipanggil dari dashboard Admin)
-// F.S.: jika input valid, satu akun Dokter (ID DKxxx) atau Perawat (ID PRxxx)
-//       tersisip pada rootU; jika dibatalkan, tidak ada data berubah
 void tambahAkunStaf(TreeUser &rootU) {
     string pilih, role, prefix, username, password;
     bool batal = false;
@@ -391,3 +342,4 @@ void tambahAkunStaf(TreeUser &rootU) {
         }
     }
 }
+//ppp

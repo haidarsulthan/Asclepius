@@ -4,10 +4,6 @@
 #include <string>
 using namespace std;
 
-// ADT BST Pasien (kunci: idPasien, contoh "PS001").
-// Catatan: saat registrasi hanya nama, NIK, dan telepon yang diisi.
-// Field lain (jenis kelamin, tanggal lahir, alamat, golongan darah)
-// dapat ditambahkan pada modul Kelola Pasien.
 struct Pasien {
     string idPasien;
     string nama;

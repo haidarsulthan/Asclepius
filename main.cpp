@@ -46,8 +46,6 @@ void dashboardAdmin(TreeUser &rootU, User u) {
     cout << "Logout berhasil." << endl;
 }
 
-// I.S.: u adalah akun Dokter yang sedang login
-// F.S.: menu Dokter ditampilkan sampai Dokter memilih logout (0)
 void dashboardDokter(User u) {
     string pilih;
     do {
@@ -77,8 +75,6 @@ void dashboardDokter(User u) {
     cout << "Logout berhasil." << endl;
 }
 
-// I.S.: rootP terdefinisi, u adalah akun Pasien yang sedang login
-// F.S.: menu Pasien ditampilkan sampai Pasien memilih logout (0)
 void dashboardPasien(TreePasien rootP, User u) {
     string pilih;
     NodePasien *dataPasien = searchPasien(rootP, u.idPenghubung);

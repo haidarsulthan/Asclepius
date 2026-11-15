@@ -6,11 +6,6 @@
 #include "dokter.h"
 using namespace std;
 
-// Hasil pemilihan keluhan oleh pasien. Disimpan sebagai variabel lokal pada
-// dashboard Pasien (bukan variabel global) dan akan dipakai oleh modul Booking.
-//   kodeKeluhan : kode keluhan terpilih dari BST Keluhan ("" = belum memilih)
-//   idLayanan   : layanan tujuan akhir (sudah memperhitungkan pengalihan)
-//   catatan     : catatan tambahan opsional ("" = tidak ada)
 struct PilihanKeluhan {
     string kodeKeluhan;
     string idLayanan;

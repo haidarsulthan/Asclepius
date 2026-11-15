@@ -3,7 +3,6 @@
 #include "user.h"
 using namespace std;
 
-// ---------- fungsi bantu internal ----------
 static bool semuaDigit(string s) {
     bool ok = true;
     size_t i = 0;
@@ -16,20 +15,16 @@ static bool semuaDigit(string s) {
     return ok;
 }
 
-// ---------- pilihan keluhan ----------
-
 void resetPilihan(PilihanKeluhan &p) {
     p.kodeKeluhan = "";
     p.idLayanan = "";
     p.catatan = "";
 }
 
-// Mengembalikan true jika pasien sudah memilih keluhan
 bool sudahMemilih(PilihanKeluhan p) {
     return p.kodeKeluhan != "";
 }
 
-// Catatan: 5-200 karakter dan memuat minimal satu karakter selain spasi/tab
 bool isCatatanValid(string catatan) {
     bool ok = (catatan.length() >= 5 && catatan.length() <= 200);
     bool adaIsi = false;
@@ -43,9 +38,6 @@ bool isCatatanValid(string catatan) {
     return ok && adaIsi;
 }
 
-// ---------- menu keluhan bernomor ----------
-
-// Mengembalikan banyaknya keluhan pada BST Keluhan
 int hitungKeluhan(TreeKeluhan root) {
     int jumlah = 0;
     if (root != NULL) {
@@ -74,9 +66,6 @@ void cariKeluhanKeN(TreeKeluhan root, int n, int &hitung, NodeKeluhan* &hasil) {
     }
 }
 
-// Menentukan layanan tujuan akhir. Layanan milik keluhan dipakai apabila aktif
-// dan (untuk layanan spesialistik) memiliki dokter aktif. Jika tidak,
-// pasien dialihkan ke layanan dasar aktif (Layanan Umum) dan alasan terisi.
 string tentukanLayananTujuan(TreeLayanan rootL, TreeDokter rootD, string idLayananKeluhan, string &alasan) {
     NodeLayanan *lay = searchLayanan(rootL, idLayananKeluhan);
     NodeLayanan *dasar;
@@ -99,7 +88,6 @@ string tentukanLayananTujuan(TreeLayanan rootL, TreeDokter rootD, string idLayan
     return hasil;
 }
 
-// ---------- proses utama ----------
 void pilihKeluhan(TreeKeluhan rootK, TreeLayanan rootL, TreeDokter rootD, PilihanKeluhan &pilihan) {
     string input, catatan, alasan, idTujuan;
     bool batal = false;

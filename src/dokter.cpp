@@ -18,7 +18,6 @@ bool isEmptyDokter(TreeDokter root) {
     return root == NULL;
 }
 
-// Mengembalikan alamat node baru berisi d (left dan right = NULL)
 NodeDokter* alokasiDokter(Dokter d) {
     NodeDokter *baru = new NodeDokter;
     baru->info = d;
@@ -40,7 +39,6 @@ bool insertDokter(TreeDokter &root, Dokter d) {
     return berhasil;
 }
 
-// Mengembalikan alamat node dengan ID yang dicari, NULL jika tidak ada
 NodeDokter* searchDokter(TreeDokter root, string idDokter) {
     NodeDokter *cur = root;
     bool ketemu = false;

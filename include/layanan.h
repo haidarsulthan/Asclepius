@@ -4,9 +4,6 @@
 #include <string>
 using namespace std;
 
-// ADT BST Layanan (kunci: idLayanan, contoh "LY001").
-// jenis : "dasar" (dilayani dokter umum) atau "spesialistik" (dokter spesialis)
-// status: "aktif" atau "nonaktif"
 struct Layanan {
     string idLayanan;
     string nama;
@@ -23,8 +20,6 @@ struct NodeLayanan {
 
 typedef NodeLayanan* TreeLayanan;
 
-// ADT BST Keluhan (kunci: kode, contoh "KL001").
-// Setiap keluhan menunjuk ke satu layanan tujuan (idLayanan).
 struct Keluhan {
     string kode;
     string nama;
@@ -39,7 +34,6 @@ struct NodeKeluhan {
 
 typedef NodeKeluhan* TreeKeluhan;
 
-// ---- BST Layanan ----
 void createTreeLayanan(TreeLayanan &root);
 bool isEmptyLayanan(TreeLayanan root);
 NodeLayanan* alokasiLayanan(Layanan l);
@@ -53,7 +47,6 @@ bool namaLayananTerdaftar(TreeLayanan root, string nama, string idKecuali);
 NodeLayanan* cariLayananDasarAktif(TreeLayanan root);
 int nomorTerbesarLayanan(TreeLayanan root);
 
-// ---- BST Keluhan ----
 void createTreeKeluhan(TreeKeluhan &root);
 bool isEmptyKeluhan(TreeKeluhan root);
 NodeKeluhan* alokasiKeluhan(Keluhan k);

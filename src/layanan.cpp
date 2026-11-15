@@ -28,10 +28,6 @@ static NodeKeluhan* terkecilKeluhan(NodeKeluhan *root) {
     return cur;
 }
 
-// =====================================================
-//                    BST LAYANAN
-// =====================================================
-
 void createTreeLayanan(TreeLayanan &root) {
     root = NULL;
 }
@@ -40,7 +36,6 @@ bool isEmptyLayanan(TreeLayanan root) {
     return root == NULL;
 }
 
-// Mengembalikan alamat node baru berisi l (left dan right = NULL)
 NodeLayanan* alokasiLayanan(Layanan l) {
     NodeLayanan *baru = new NodeLayanan;
     baru->info = l;
@@ -62,7 +57,6 @@ bool insertLayanan(TreeLayanan &root, Layanan l) {
     return berhasil;
 }
 
-// Mengembalikan alamat node dengan ID yang dicari, NULL jika tidak ada
 NodeLayanan* searchLayanan(TreeLayanan root, string idLayanan) {
     NodeLayanan *cur = root;
     bool ketemu = false;
@@ -139,8 +133,6 @@ void tampilDetailLayanan(NodeLayanan *l) {
     }
 }
 
-// Mengembalikan true jika nama layanan sudah dipakai layanan lain
-// (tidak peka huruf besar/kecil; idKecuali = layanan yang dikecualikan)
 bool namaLayananTerdaftar(TreeLayanan root, string nama, string idKecuali) {
     bool ada = false;
     if (root != NULL) {
@@ -151,8 +143,6 @@ bool namaLayananTerdaftar(TreeLayanan root, string nama, string idKecuali) {
     return ada;
 }
 
-// Mengembalikan alamat layanan pertama (urut ID) yang berjenis "dasar" dan
-// berstatus "aktif", NULL jika tidak ada. Dipakai sebagai layanan pengalihan.
 NodeLayanan* cariLayananDasarAktif(TreeLayanan root) {
     NodeLayanan *hasil = NULL;
     if (root != NULL) {
@@ -167,7 +157,6 @@ NodeLayanan* cariLayananDasarAktif(TreeLayanan root) {
     return hasil;
 }
 
-// Mengembalikan angka ID layanan terbesar (node paling kanan), 0 jika kosong
 int nomorTerbesarLayanan(TreeLayanan root) {
     NodeLayanan *cur = root;
     int nomor = 0;
@@ -180,9 +169,6 @@ int nomorTerbesarLayanan(TreeLayanan root) {
     return nomor;
 }
 
-// =====================================================
-//                    BST KELUHAN
-// =====================================================
 
 void createTreeKeluhan(TreeKeluhan &root) {
     root = NULL;
@@ -299,7 +285,6 @@ bool namaKeluhanTerdaftar(TreeKeluhan root, string nama, string kodeKecuali) {
     return ada;
 }
 
-// Mengembalikan banyaknya keluhan yang menunjuk ke layanan tertentu
 int jumlahKeluhanKeLayanan(TreeKeluhan root, string idLayanan) {
     int jumlah = 0;
     if (root != NULL) {
@@ -324,8 +309,6 @@ int nomorTerbesarKeluhan(TreeKeluhan root) {
     return nomor;
 }
 
-// Banyaknya booking yang mencatat keluhan tersebut.
-// Saat ini selalu 0 karena modul Booking belum dibuat (diisi pada Tahap 3).
 int jumlahBookingDenganKeluhan(string kode) {
     (void)kode;
     return 0;

@@ -1,5 +1,5 @@
 #include <iostream>
-#include "/admin.h"
+#include "admin.h"
 using namespace std;
 
 

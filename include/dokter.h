@@ -5,10 +5,6 @@
 #include "layanan.h"
 using namespace std;
 
-// ADT BST Dokter (kunci: idDokter, contoh "DK001").
-// idDokter sama dengan idPenghubung pada akun User role Dokter.
-// spesialisasi: gelar spesialis (mis. "Sp.A"), "-" untuk dokter umum.
-// status: "aktif" atau "nonaktif".
 struct Dokter {
     string idDokter;
     string username;

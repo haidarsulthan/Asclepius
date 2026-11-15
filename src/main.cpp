@@ -163,7 +163,6 @@ void dashboardPerawat(User u) {
     cout << "Logout berhasil." << endl;
 }
 
-// ---------- program utama ----------
 int main() {
     TreeUser rootU;
     TreePasien rootP;

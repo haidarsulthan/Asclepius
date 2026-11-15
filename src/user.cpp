@@ -2,23 +2,19 @@
 #include "user.h"
 using namespace std;
 
-// ---------- fungsi bantu internal ----------
 static bool isAlnum(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
 
-// ---------- operasi BST User ----------
 
 void createTreeUser(TreeUser &root) {
     root = NULL;
 }
 
-// Mengembalikan true jika pohon kosong
 bool isEmptyUser(TreeUser root) {
     return root == NULL;
 }
 
-// Mengembalikan alamat node baru berisi u (left dan right = NULL)
 NodeUser* alokasiUser(User u) {
     NodeUser *baru = new NodeUser;
     baru->info = u;
@@ -48,7 +44,6 @@ static NodeUser* terkecilUser(NodeUser *root) {
     return cur;
 }
 
-// Mengembalikan alamat node dengan username yang dicari, NULL jika tidak ada
 NodeUser* searchUser(TreeUser root, string username) {
     NodeUser *cur = root;
     bool ketemu = false;
@@ -104,9 +99,6 @@ void tampilUser(TreeUser root) {
     }
 }
 
-// Mengembalikan angka ID terbesar untuk role tertentu (mis. "DK003" -> 3),
-// 0 jika belum ada akun dengan role tersebut. ID bukan kunci BST,
-// sehingga seluruh pohon ditelusuri.
 int nomorTerbesarRole(TreeUser root, string role) {
     int hasil = 0;
     int kiri, kanan, sendiri = 0;
@@ -127,11 +119,6 @@ int nomorTerbesarRole(TreeUser root, string role) {
     return hasil;
 }
 
-// ---------- utilitas ----------
-
-// Hash FNV-1a 64-bit yang diimplementasikan manual (tanpa pustaka tambahan).
-// Username dipakai sebagai "salt" sehingga dua akun dengan password sama
-// menghasilkan hash berbeda. Hasil: 16 karakter heksadesimal.
 string hashPassword(string username, string password) {
     string data = username + ":" + password;
     unsigned long long h = 14695981039346656037ULL;
@@ -150,7 +137,6 @@ string hashPassword(string username, string password) {
     return hasil;
 }
 
-// Mengembalikan ID berformat prefix + nomor 3 digit, mis. ("DK", 7) -> "DK007"
 string buatId(string prefix, int nomor) {
     string angka = to_string(nomor);
     while (angka.length() < 3) {
@@ -159,8 +145,6 @@ string buatId(string prefix, int nomor) {
     return prefix + angka;
 }
 
-// Menampilkan prompt lalu membaca satu baris input.
-// Jika input berakhir (EOF), mengembalikan "0" agar perulangan pemanggil berhenti.
 string bacaInput(string prompt) {
     string s;
     cout << prompt;
@@ -173,7 +157,6 @@ string bacaInput(string prompt) {
     return s;
 }
 
-// Username: 4-15 karakter, hanya huruf dan angka (tanpa spasi)
 bool isUsernameValid(string username) {
     bool ok = (username.length() >= 4 && username.length() <= 15);
     size_t i = 0;
@@ -186,7 +169,6 @@ bool isUsernameValid(string username) {
     return ok;
 }
 
-// Password: minimal 6 karakter dan tidak mengandung spasi/tab
 bool isPasswordValid(string password) {
     bool ok = (password.length() >= 6);
     size_t i = 0;
@@ -199,9 +181,6 @@ bool isPasswordValid(string password) {
     return ok;
 }
 
-// Membaca teks sepanjang 1..maxPanjang karakter (spasi saja dianggap kosong).
-// Jika bolehKosong = true, input kosong diterima (hasil ""). Mengetik 0
-// membatalkan: batal = true.
 string bacaTeks(string prompt, size_t maxPanjang, bool bolehKosong, bool &batal) {
     string s = "";
     bool valid = false;
@@ -232,8 +211,6 @@ string bacaTeks(string prompt, size_t maxPanjang, bool bolehKosong, bool &batal)
     return s;
 }
 
-// Menampilkan prompt lalu menunggu jawaban y/n.
-// Mengembalikan true jika y/Y; false jika n/N/0 (atau input berakhir)
 bool bacaYaTidak(string prompt) {
     string s;
     bool valid = false;
@@ -251,8 +228,6 @@ bool bacaYaTidak(string prompt) {
     }
     return ya;
 }
-
-// ---------- proses autentikasi ----------
 
 void isiDataAwalUser(TreeUser &rootU) {
     User admin;

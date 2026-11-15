@@ -2,18 +2,23 @@
 #include "user.h"
 using namespace std;
 
+// ---------- fungsi bantu internal ----------
 static bool isAlnum(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
+
+// ---------- operasi BST User ----------
 
 void createTreeUser(TreeUser &root) {
     root = NULL;
 }
 
+// Mengembalikan true jika pohon kosong
 bool isEmptyUser(TreeUser root) {
     return root == NULL;
 }
 
+// Mengembalikan alamat node baru berisi u (left dan right = NULL)
 NodeUser* alokasiUser(User u) {
     NodeUser *baru = new NodeUser;
     baru->info = u;
@@ -35,6 +40,15 @@ bool insertUser(TreeUser &root, User u) {
     return berhasil;
 }
 
+static NodeUser* terkecilUser(NodeUser *root) {
+    NodeUser *cur = root;
+    while (cur->left != NULL) {
+        cur = cur->left;
+    }
+    return cur;
+}
+
+// Mengembalikan alamat node dengan username yang dicari, NULL jika tidak ada
 NodeUser* searchUser(TreeUser root, string username) {
     NodeUser *cur = root;
     bool ketemu = false;
@@ -50,15 +64,49 @@ NodeUser* searchUser(TreeUser root, string username) {
     return cur;
 }
 
+bool deleteUser(TreeUser &root, string username) {
+    bool berhasil = false;
+    NodeUser *hapus;
+    NodeUser *pengganti;
+    string kunciPengganti;
+    if (root != NULL) {
+        if (username < root->info.username) {
+            berhasil = deleteUser(root->left, username);
+        } else if (username > root->info.username) {
+            berhasil = deleteUser(root->right, username);
+        } else {
+            berhasil = true;
+            if (root->left == NULL) {
+                hapus = root;
+                root = root->right;
+                delete hapus;
+            } else if (root->right == NULL) {
+                hapus = root;
+                root = root->left;
+                delete hapus;
+            } else {
+                pengganti = terkecilUser(root->right);
+                kunciPengganti = pengganti->info.username;
+                root->info = pengganti->info;
+                deleteUser(root->right, kunciPengganti);
+            }
+        }
+    }
+    return berhasil;
+}
+
 void tampilUser(TreeUser root) {
     if (root != NULL) {
         tampilUser(root->left);
         cout << root->info.username << " | " << root->info.role
-             << " | " << root->info.idPenghubung << endl;
+            << " | " << root->info.idPenghubung << endl;
         tampilUser(root->right);
     }
 }
 
+// Mengembalikan angka ID terbesar untuk role tertentu (mis. "DK003" -> 3),
+// 0 jika belum ada akun dengan role tersebut. ID bukan kunci BST,
+// sehingga seluruh pohon ditelusuri.
 int nomorTerbesarRole(TreeUser root, string role) {
     int hasil = 0;
     int kiri, kanan, sendiri = 0;
@@ -79,6 +127,11 @@ int nomorTerbesarRole(TreeUser root, string role) {
     return hasil;
 }
 
+// ---------- utilitas ----------
+
+// Hash FNV-1a 64-bit yang diimplementasikan manual (tanpa pustaka tambahan).
+// Username dipakai sebagai "salt" sehingga dua akun dengan password sama
+// menghasilkan hash berbeda. Hasil: 16 karakter heksadesimal.
 string hashPassword(string username, string password) {
     string data = username + ":" + password;
     unsigned long long h = 14695981039346656037ULL;
@@ -97,6 +150,7 @@ string hashPassword(string username, string password) {
     return hasil;
 }
 
+// Mengembalikan ID berformat prefix + nomor 3 digit, mis. ("DK", 7) -> "DK007"
 string buatId(string prefix, int nomor) {
     string angka = to_string(nomor);
     while (angka.length() < 3) {
@@ -105,6 +159,8 @@ string buatId(string prefix, int nomor) {
     return prefix + angka;
 }
 
+// Menampilkan prompt lalu membaca satu baris input.
+// Jika input berakhir (EOF), mengembalikan "0" agar perulangan pemanggil berhenti.
 string bacaInput(string prompt) {
     string s;
     cout << prompt;
@@ -117,6 +173,7 @@ string bacaInput(string prompt) {
     return s;
 }
 
+// Username: 4-15 karakter, hanya huruf dan angka (tanpa spasi)
 bool isUsernameValid(string username) {
     bool ok = (username.length() >= 4 && username.length() <= 15);
     size_t i = 0;
@@ -129,6 +186,7 @@ bool isUsernameValid(string username) {
     return ok;
 }
 
+// Password: minimal 6 karakter dan tidak mengandung spasi/tab
 bool isPasswordValid(string password) {
     bool ok = (password.length() >= 6);
     size_t i = 0;
@@ -141,6 +199,61 @@ bool isPasswordValid(string password) {
     return ok;
 }
 
+// Membaca teks sepanjang 1..maxPanjang karakter (spasi saja dianggap kosong).
+// Jika bolehKosong = true, input kosong diterima (hasil ""). Mengetik 0
+// membatalkan: batal = true.
+string bacaTeks(string prompt, size_t maxPanjang, bool bolehKosong, bool &batal) {
+    string s = "";
+    bool valid = false;
+    bool kosong;
+    size_t i;
+    batal = false;
+    while (!valid && !batal) {
+        s = bacaInput(prompt);
+        kosong = true;
+        for (i = 0; i < s.length(); i++) {
+            if (s[i] != ' ') {
+                kosong = false;
+            }
+        }
+        if (s == "0") {
+            batal = true;
+        } else if (kosong && !bolehKosong) {
+            cout << "Input tidak boleh kosong." << endl;
+        } else if (s.length() > maxPanjang) {
+            cout << "Maksimal " << maxPanjang << " karakter." << endl;
+        } else {
+            if (kosong) {
+                s = "";
+            }
+            valid = true;
+        }
+    }
+    return s;
+}
+
+// Menampilkan prompt lalu menunggu jawaban y/n.
+// Mengembalikan true jika y/Y; false jika n/N/0 (atau input berakhir)
+bool bacaYaTidak(string prompt) {
+    string s;
+    bool valid = false;
+    bool ya = false;
+    while (!valid) {
+        s = bacaInput(prompt + " (y/n): ");
+        if (s == "y" || s == "Y") {
+            ya = true;
+            valid = true;
+        } else if (s == "n" || s == "N" || s == "0") {
+            valid = true;
+        } else {
+            cout << "Ketik y atau n." << endl;
+        }
+    }
+    return ya;
+}
+
+// ---------- proses autentikasi ----------
+
 void isiDataAwalUser(TreeUser &rootU) {
     User admin;
     admin.username = "admin";
@@ -150,7 +263,7 @@ void isiDataAwalUser(TreeUser &rootU) {
     insertUser(rootU, admin);
 }
 
-static void inputKredensial(TreeUser root, string &username, string &password, bool &batal) {
+void inputKredensial(TreeUser root, string &username, string &password, bool &batal) {
     bool valid = false;
     string konfirmasi;
 
@@ -246,6 +359,7 @@ void registrasiPasien(TreeUser &rootU, TreePasien &rootP) {
             cout << "Kapasitas ID pasien penuh. Registrasi gagal." << endl;
         } else {
             p.idPasien = buatId("PS", nomor);
+            p.username = username;
             p.nama = nama;
             p.nik = nik;
             p.telepon = telepon;
@@ -294,52 +408,28 @@ void loginUser(TreeUser rootU, bool &berhasil, User &userAktif) {
     }
 }
 
-void tambahAkunStaf(TreeUser &rootU) {
-    string pilih, role, prefix, username, password;
+void tambahAkunPerawat(TreeUser &rootU) {
+    string username, password;
     bool batal = false;
-    bool valid = false;
     int nomor;
     User u;
 
-    cout << "\n=== BUAT AKUN DOKTER / PERAWAT ===" << endl;
-    cout << "1. Dokter" << endl;
-    cout << "2. Perawat" << endl;
-    cout << "0. Batal" << endl;
-    while (!valid && !batal) {
-        pilih = bacaInput("Pilih role: ");
-        if (pilih == "1") {
-            role = "Dokter";
-            prefix = "DK";
-            valid = true;
-        } else if (pilih == "2") {
-            role = "Perawat";
-            prefix = "PR";
-            valid = true;
-        } else if (pilih == "0") {
-            batal = true;
-        } else {
-            cout << "Pilihan tidak valid." << endl;
-        }
-    }
-
-    if (!batal) {
-        inputKredensial(rootU, username, password, batal);
-    }
+    cout << "\n=== BUAT AKUN PERAWAT ===" << endl;
+    inputKredensial(rootU, username, password, batal);
 
     if (batal) {
         cout << "Pembuatan akun dibatalkan." << endl;
     } else {
-        nomor = nomorTerbesarRole(rootU, role) + 1;
+        nomor = nomorTerbesarRole(rootU, "Perawat") + 1;
         if (nomor > 999) {
-            cout << "Kapasitas ID " << role << " penuh. Akun tidak dibuat." << endl;
+            cout << "Kapasitas ID Perawat penuh. Akun tidak dibuat." << endl;
         } else {
             u.username = username;
             u.passwordHash = hashPassword(username, password);
-            u.role = role;
-            u.idPenghubung = buatId(prefix, nomor);
+            u.role = "Perawat";
+            u.idPenghubung = buatId("PR", nomor);
             insertUser(rootU, u);
-            cout << "Akun " << role << " berhasil dibuat. ID: " << u.idPenghubung << endl;
+            cout << "Akun Perawat berhasil dibuat. ID: " << u.idPenghubung << endl;
         }
     }
-}
-//ppp
+};

@@ -18,14 +18,36 @@ static bool semuaDigit(string s) {
     return ok;
 }
 
+static string kecil(string s) {
+    size_t i;
+    for (i = 0; i < s.length(); i++) {
+        if (s[i] >= 'A' && s[i] <= 'Z') {
+            s[i] = (char)(s[i] + 32);
+        }
+    }
+    return s;
+}
+
+static NodePasien* terkecilPasien(NodePasien *root) {
+    NodePasien *cur = root;
+    while (cur->left != NULL) {
+        cur = cur->left;
+    }
+    return cur;
+}
+
+// ---------- operasi BST Pasien ----------
+
 void createTreePasien(TreePasien &root) {
     root = NULL;
 }
 
+// Mengembalikan true jika pohon kosong
 bool isEmptyPasien(TreePasien root) {
     return root == NULL;
 }
 
+// Mengembalikan alamat node baru berisi p (left dan right = NULL)
 NodePasien* alokasiPasien(Pasien p) {
     NodePasien *baru = new NodePasien;
     baru->info = p;
@@ -47,6 +69,7 @@ bool insertPasien(TreePasien &root, Pasien p) {
     return berhasil;
 }
 
+// Mengembalikan alamat node dengan idPasien yang dicari, NULL jika tidak ada
 NodePasien* searchPasien(TreePasien root, string idPasien) {
     NodePasien *cur = root;
     bool ketemu = false;
@@ -62,16 +85,89 @@ NodePasien* searchPasien(TreePasien root, string idPasien) {
     return cur;
 }
 
+bool deletePasien(TreePasien &root, string idPasien) {
+    bool berhasil = false;
+    NodePasien *hapus;
+    NodePasien *pengganti;
+    string kunciPengganti;
+    if (root != NULL) {
+        if (idPasien < root->info.idPasien) {
+            berhasil = deletePasien(root->left, idPasien);
+        } else if (idPasien > root->info.idPasien) {
+            berhasil = deletePasien(root->right, idPasien);
+        } else {
+            berhasil = true;
+            if (root->left == NULL) {
+                hapus = root;
+                root = root->right;
+                delete hapus;
+            } else if (root->right == NULL) {
+                hapus = root;
+                root = root->left;
+                delete hapus;
+            } else {
+                pengganti = terkecilPasien(root->right);
+                kunciPengganti = pengganti->info.idPasien;
+                root->info = pengganti->info;
+                deletePasien(root->right, kunciPengganti);
+            }
+        }
+    }
+    return berhasil;
+}
+
+// Mengembalikan alamat pasien dengan NIK tersebut, NULL jika tidak ada.
+// NIK bukan kunci BST, sehingga seluruh pohon ditelusuri.
+NodePasien* searchPasienByNik(TreePasien root, string nik) {
+    NodePasien *hasil = NULL;
+    if (root != NULL) {
+        if (root->info.nik == nik) {
+            hasil = root;
+        } else {
+            hasil = searchPasienByNik(root->left, nik);
+            if (hasil == NULL) {
+                hasil = searchPasienByNik(root->right, nik);
+            }
+        }
+    }
+    return hasil;
+}
+
+// Mengembalikan true jika NIK dipakai pasien lain selain idSendiri
+bool nikDipakaiOrangLain(TreePasien root, string nik, string idSendiri) {
+    NodePasien *p = searchPasienByNik(root, nik);
+    return p != NULL && p->info.idPasien != idSendiri;
+}
+
+int cariPasienByNama(TreePasien root, string kataKunci) {
+    int jumlah = 0;
+    if (root != NULL) {
+        jumlah = cariPasienByNama(root->left, kataKunci);
+        if (kecil(root->info.nama).find(kecil(kataKunci)) != string::npos) {
+            cout << root->info.idPasien << " | " << root->info.nama << " | "
+                << root->info.nik << " | " << root->info.telepon << endl;
+            jumlah++;
+        }
+        jumlah = jumlah + cariPasienByNama(root->right, kataKunci);
+    }
+    return jumlah;
+}
+
+// Mengembalikan true jika ada pasien dengan NIK tersebut.
+// NIK bukan kunci BST, sehingga seluruh pohon ditelusuri.
 bool nikTerdaftar(TreePasien root, string nik) {
     bool ada = false;
     if (root != NULL) {
         ada = (root->info.nik == nik)
-              || nikTerdaftar(root->left, nik)
-              || nikTerdaftar(root->right, nik);
+            || nikTerdaftar(root->left, nik)
+            || nikTerdaftar(root->right, nik);
     }
     return ada;
 }
 
+// Mengembalikan angka pada ID pasien terbesar (mis. "PS007" -> 7), 0 jika
+// pohon kosong. ID terbesar berada pada node paling kanan karena nomor ID
+// dibuat dengan 3 digit (zero-padded) sehingga urutan string = urutan angka.
 int nomorTerbesarPasien(TreePasien root) {
     NodePasien *cur = root;
     int nomor = 0;
@@ -88,11 +184,31 @@ void tampilPasien(TreePasien root) {
     if (root != NULL) {
         tampilPasien(root->left);
         cout << root->info.idPasien << " | " << root->info.nama << " | "
-             << root->info.nik << " | " << root->info.telepon << endl;
+            << root->info.nik << " | " << root->info.telepon << endl;
         tampilPasien(root->right);
     }
 }
 
+void tampilDetailPasien(NodePasien *p) {
+    if (p != NULL) {
+        cout << "ID       : " << p->info.idPasien << endl;
+        cout << "Username : " << p->info.username << endl;
+        cout << "Nama     : " << p->info.nama << endl;
+        cout << "NIK      : " << p->info.nik << endl;
+        cout << "Telepon  : " << p->info.telepon << endl;
+    }
+}
+
+// Banyaknya booking aktif milik pasien.
+int jumlahBookingAktifPasien(string idPasien) {
+    (void)idPasien;
+    return 0;
+}
+
+// ---------- validasi input ----------
+
+// Nama: 1-50 karakter, hanya huruf, spasi, titik, atau apostrof,
+// dan minimal memuat satu huruf.
 bool isNamaValid(string nama) {
     bool ok = (nama.length() >= 1 && nama.length() <= 50);
     bool adaHuruf = false;
@@ -109,10 +225,12 @@ bool isNamaValid(string nama) {
     return ok && adaHuruf;
 }
 
+// NIK: tepat 16 digit angka
 bool isNikValid(string nik) {
     return nik.length() == 16 && semuaDigit(nik);
 }
 
+// Telepon: 10-13 digit angka
 bool isTeleponValid(string telepon) {
     return telepon.length() >= 10 && telepon.length() <= 13 && semuaDigit(telepon);
 }

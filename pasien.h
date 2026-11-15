@@ -4,8 +4,13 @@
 #include <string>
 using namespace std;
 
+// ADT BST Pasien (kunci: idPasien, contoh "PS001").
+// Catatan: saat registrasi hanya nama, NIK, dan telepon yang diisi.
+// Field lain (jenis kelamin, tanggal lahir, alamat, golongan darah)
+// dapat ditambahkan pada modul Kelola Pasien.
 struct Pasien {
     string idPasien;
+    string username;
     string nama;
     string nik;
     string telepon;
@@ -26,7 +31,13 @@ bool insertPasien(TreePasien &root, Pasien p);
 NodePasien* searchPasien(TreePasien root, string idPasien);
 bool nikTerdaftar(TreePasien root, string nik);
 int nomorTerbesarPasien(TreePasien root);
+bool deletePasien(TreePasien &root, string idPasien);
+NodePasien* searchPasienByNik(TreePasien root, string nik);
+bool nikDipakaiOrangLain(TreePasien root, string nik, string idSendiri);
+int cariPasienByNama(TreePasien root, string kataKunci);
 void tampilPasien(TreePasien root);
+void tampilDetailPasien(NodePasien *p);
+int jumlahBookingAktifPasien(string idPasien);
 
 bool isNamaValid(string nama);
 bool isNikValid(string nik);

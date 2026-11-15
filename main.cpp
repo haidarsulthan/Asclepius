@@ -1,44 +1,48 @@
 #include <iostream>
-#include "user.h"
-#include "pasien.h"
-#include "keluhan.h"
+#include "admin.h"
+#include "pilihKeluhan.h"
 using namespace std;
+
 
 void fiturMenyusul(string namaFitur) {
     cout << "[" << namaFitur << "] belum tersedia (menyusul)." << endl;
 }
 
-void dashboardAdmin(TreeUser &rootU, User u) {
+void dashboardAdmin(TreeUser &rootU, TreePasien &rootP, TreeDokter &rootD,
+                    TreeLayanan &rootL, TreeKeluhan &rootK, User u) {
     string pilih;
     do {
         cout << "\n=== DASHBOARD ADMIN (" << u.username << ") ===" << endl;
-        cout << "1. Buat akun Dokter / Perawat" << endl;
+        cout << "1. Buat akun Perawat" << endl;
         cout << "2. Lihat daftar akun" << endl;
         cout << "3. Kelola Pasien" << endl;
         cout << "4. Kelola Dokter" << endl;
-        cout << "5. Kelola Layanan dan Keluhan" << endl;
-        cout << "6. Kelola Jadwal Dokter" << endl;
-        cout << "7. Lihat Booking" << endl;
-        cout << "8. Laporan" << endl;
+        cout << "5. Kelola Layanan" << endl;
+        cout << "6. Kelola Keluhan" << endl;
+        cout << "7. Kelola Jadwal Dokter" << endl;
+        cout << "8. Lihat Booking" << endl;
+        cout << "9. Laporan" << endl;
         cout << "0. Logout" << endl;
         pilih = bacaInput("Pilihan: ");
 
         if (pilih == "1") {
-            tambahAkunStaf(rootU);
+            tambahAkunPerawat(rootU);
         } else if (pilih == "2") {
             cout << "\nusername | role | ID" << endl;
             tampilUser(rootU);
         } else if (pilih == "3") {
-            fiturMenyusul("Kelola Pasien");
+            menuKelolaPasien(rootP, rootU);
         } else if (pilih == "4") {
-            fiturMenyusul("Kelola Dokter");
+            menuKelolaDokter(rootD, rootL, rootU);
         } else if (pilih == "5") {
-            fiturMenyusul("Kelola Layanan dan Keluhan");
+            menuKelolaLayanan(rootL, rootK, rootD);
         } else if (pilih == "6") {
-            fiturMenyusul("Kelola Jadwal Dokter");
+            menuKelolaKeluhan(rootK, rootL);
         } else if (pilih == "7") {
-            fiturMenyusul("Lihat Booking");
+            fiturMenyusul("Kelola Jadwal Dokter");
         } else if (pilih == "8") {
+            fiturMenyusul("Lihat Booking");
+        } else if (pilih == "9") {
             fiturMenyusul("Laporan");
         } else if (pilih != "0") {
             cout << "Pilihan tidak valid." << endl;
@@ -47,10 +51,25 @@ void dashboardAdmin(TreeUser &rootU, User u) {
     cout << "Logout berhasil." << endl;
 }
 
-void dashboardDokter(User u) {
+void dashboardDokter(TreeDokter rootD, TreeLayanan rootL, User u) {
     string pilih;
+    NodeDokter *dataDokter = searchDokter(rootD, u.idPenghubung);
+    NodeLayanan *lay = NULL;
+    if (dataDokter != NULL) {
+        lay = searchLayanan(rootL, dataDokter->info.idLayanan);
+    }
     do {
-        cout << "\n=== DASHBOARD DOKTER (" << u.username << ", " << u.idPenghubung << ") ===" << endl;
+        cout << "\n=== DASHBOARD DOKTER ===" << endl;
+        if (dataDokter != NULL) {
+            cout << "Selamat datang, " << dataDokter->info.nama;
+            if (dataDokter->info.spesialisasi != "-") {
+                cout << ", " << dataDokter->info.spesialisasi;
+            }
+            cout << " (" << dataDokter->info.idDokter << ")" << endl;
+            if (lay != NULL) {
+                cout << "Bertugas di: " << lay->info.nama << endl;
+            }
+        }
         cout << "1. Lihat jadwal periksa" << endl;
         cout << "2. Lihat pasien yang booking" << endl;
         cout << "3. Tandai booking selesai" << endl;
@@ -76,17 +95,21 @@ void dashboardDokter(User u) {
     cout << "Logout berhasil." << endl;
 }
 
-void dashboardPasien(TreePasien rootP, ListKeluhan &listK, User u) {
+void dashboardPasien(TreePasien rootP, TreeLayanan rootL, TreeDokter rootD,
+                    TreeKeluhan rootK, User u) {
     string pilih;
     NodePasien *dataPasien = searchPasien(rootP, u.idPenghubung);
+    PilihanKeluhan pilihan;
+    resetPilihan(pilihan);
     do {
         cout << "\n=== DASHBOARD PASIEN ===" << endl;
         if (dataPasien != NULL) {
             cout << "Selamat datang, " << dataPasien->info.nama
-                 << " (" << dataPasien->info.idPasien << ")" << endl;
+                << " (" << dataPasien->info.idPasien << ")" << endl;
         }
-        cout << "1. Tulis keluhan" << endl;                       // diganti
-        cout << "2. Lihat layanan, dokter, dan jadwal" << endl;
+        tampilPilihanSingkat(pilihan, rootK, rootL);
+        cout << "1. Pilih keluhan" << endl;
+        cout << "2. Lihat layanan dan dokter" << endl;
         cout << "3. Booking jadwal periksa" << endl;
         cout << "4. Riwayat booking" << endl;
         cout << "5. Batalkan booking" << endl;
@@ -94,11 +117,18 @@ void dashboardPasien(TreePasien rootP, ListKeluhan &listK, User u) {
         pilih = bacaInput("Pilihan: ");
 
         if (pilih == "1") {
-            tulisKeluhan(listK, u);                               // diganti
+            pilihKeluhan(rootK, rootL, rootD, pilihan);
         } else if (pilih == "2") {
-            fiturMenyusul("Lihat layanan, dokter, dan jadwal");
+            cout << "\n--- Layanan dan dokter yang tersedia ---" << endl;
+            tampilLayananDenganDokter(rootL, rootD);
         } else if (pilih == "3") {
-            fiturMenyusul("Booking jadwal periksa");
+            if (!sudahMemilih(pilihan)) {
+                cout << "Pilih keluhan terlebih dahulu (menu 1)." << endl;
+            } else {
+                cout << "\nBooking akan memakai pilihan berikut:" << endl;
+                tampilPilihan(pilihan, rootK, rootL);
+                fiturMenyusul("Booking jadwal periksa");
+            }
         } else if (pilih == "4") {
             fiturMenyusul("Riwayat booking");
         } else if (pilih == "5") {
@@ -133,18 +163,24 @@ void dashboardPerawat(User u) {
     cout << "Logout berhasil." << endl;
 }
 
+// ---------- program utama ----------
 int main() {
     TreeUser rootU;
     TreePasien rootP;
+    TreeDokter rootD;
+    TreeLayanan rootL;
+    TreeKeluhan rootK;
     User userAktif;
     bool berhasil;
     string pilih;
-    ListKeluhan listK;
 
     createTreeUser(rootU);
     createTreePasien(rootP);
+    createTreeDokter(rootD);
+    createTreeLayanan(rootL);
+    createTreeKeluhan(rootK);
     isiDataAwalUser(rootU);
-    createListKeluhan(listK);
+    isiDataAwalKlinik(rootL, rootK, rootD, rootU);
 
     do {
         cout << "\n=== KLINIK ASCLEPIUS ===" << endl;
@@ -157,11 +193,11 @@ int main() {
             loginUser(rootU, berhasil, userAktif);
             if (berhasil) {
                 if (userAktif.role == "Admin") {
-                    dashboardAdmin(rootU, userAktif);
+                    dashboardAdmin(rootU, rootP, rootD, rootL, rootK, userAktif);
                 } else if (userAktif.role == "Dokter") {
-                    dashboardDokter(userAktif);
+                    dashboardDokter(rootD, rootL, userAktif);
                 } else if (userAktif.role == "Pasien") {
-                   dashboardPasien(rootP, listK, userAktif);
+                    dashboardPasien(rootP, rootL, rootD, rootK, userAktif);
                 } else if (userAktif.role == "Perawat") {
                     dashboardPerawat(userAktif);
                 }
@@ -175,4 +211,4 @@ int main() {
 
     cout << "Terima kasih." << endl;
     return 0;
-}
+};

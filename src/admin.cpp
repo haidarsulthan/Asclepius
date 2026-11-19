@@ -3,7 +3,6 @@
 using namespace std;
 
 
-// Membaca ID dan mengubah huruf kecil menjadi besar (ly001 -> LY001)
 static string bacaId(string prompt) {
     string s = bacaInput(prompt);
     size_t i;
@@ -43,7 +42,6 @@ static void pilihLayananAktif(TreeLayanan rootL, string &idLayanan, bool bolehKo
     }
 }
 
-// Meminta pilihan status: 1 = aktif, 2 = nonaktif, kosong = tetap.
 static void bacaStatusOpsional(string &statusBaru, bool &batal) {
     string s;
     bool valid = false;
@@ -67,13 +65,6 @@ static void bacaStatusOpsional(string &statusBaru, bool &batal) {
     }
 }
 
-// =====================================================
-//                     DATA AWAL
-// =====================================================
-
-// Menyisipkan data[awal..akhir] dengan urutan elemen tengah lebih dulu
-// agar BST awal seimbang (data terurut jika disisipkan berurutan akan
-// membuat pohon miring seperti linked list).
 static void isiLayananSeimbang(TreeLayanan &root, Layanan data[], int awal, int akhir) {
     int tengah;
     if (awal <= akhir) {
@@ -153,10 +144,6 @@ void isiDataAwalKlinik(TreeLayanan &rootL, TreeKeluhan &rootK, TreeDokter &rootD
     }
     isiDokterSeimbang(rootD, dok, 0, 3);
 }
-
-// =====================================================
-//                    KELOLA LAYANAN
-// =====================================================
 
 static void tambahLayanan(TreeLayanan &rootL) {
     Layanan l;
@@ -343,10 +330,6 @@ void menuKelolaLayanan(TreeLayanan &rootL, TreeKeluhan rootK, TreeDokter rootD) 
     } while (pilih != "0");
 }
 
-// =====================================================
-//                    KELOLA KELUHAN
-// =====================================================
-
 static void tambahKeluhan(TreeKeluhan &rootK, TreeLayanan rootL) {
     Keluhan k;
     bool batal = false;
@@ -499,10 +482,6 @@ void menuKelolaKeluhan(TreeKeluhan &rootK, TreeLayanan rootL) {
         }
     } while (pilih != "0");
 }
-
-// =====================================================
-//                     KELOLA DOKTER
-// =====================================================
 
 static void tambahDokter(TreeDokter &rootD, TreeLayanan rootL, TreeUser &rootU) {
     Dokter d;
@@ -777,10 +756,6 @@ void menuKelolaDokter(TreeDokter &rootD, TreeLayanan rootL, TreeUser &rootU) {
         }
     } while (pilih != "0");
 }
-
-// =====================================================
-//                     KELOLA PASIEN
-// =====================================================
 
 static void cariPasienId(TreePasien rootP) {
     string id = bacaId("ID pasien (0 = batal): ");

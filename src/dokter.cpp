@@ -153,7 +153,6 @@ void tampilLayananDenganDokter(TreeLayanan rootL, TreeDokter rootD) {
     }
 }
 
-// Mengembalikan banyaknya dokter (semua status) pada layanan tertentu
 int jumlahDokterDiLayanan(TreeDokter root, string idLayanan) {
     int jumlah = 0;
     if (root != NULL) {
@@ -166,7 +165,6 @@ int jumlahDokterDiLayanan(TreeDokter root, string idLayanan) {
     return jumlah;
 }
 
-// Mengembalikan banyaknya dokter berstatus aktif pada layanan tertentu
 int jumlahDokterAktifDiLayanan(TreeDokter root, string idLayanan) {
     int jumlah = 0;
     if (root != NULL) {
@@ -179,7 +177,6 @@ int jumlahDokterAktifDiLayanan(TreeDokter root, string idLayanan) {
     return jumlah;
 }
 
-// Banyaknya jadwal yang dimiliki dokter.
 int jumlahJadwalDokter(string idDokter) {
     (void)idDokter;
     return 0;
